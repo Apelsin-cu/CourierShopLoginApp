@@ -34,7 +34,7 @@ namespace CourierShopLoginApp.DataModels
             {
                 Provider = "System.Data.SqlClient",
                 ProviderConnectionString = sqlBuilder.ToString(),
-                Metadata = "res://*/DataModels.CourierShopDB.csdl|res://*/DataModels.CourierShopDB.ssdl|res://*/DataModels.CourierShopDB.msl"
+                Metadata = "res://*/DataModels.CourierServiceDBEntities.csdl|res://*/DataModels.CourierServiceDBEntities.ssdl|res://*/DataModels.CourierServiceDBEntities.msl"
             };
 
             return entityBuilder.ToString();

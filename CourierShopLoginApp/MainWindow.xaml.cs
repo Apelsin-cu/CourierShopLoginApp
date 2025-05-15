@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using CourierShopLoginApp.DataModels;
+using CourierShopLoginApp.Models;
 
 namespace CourierShopLoginApp
 {
@@ -21,22 +22,37 @@ namespace CourierShopLoginApp
     /// </summary>
     public partial class MainWindow : Window
     {
-        private Users _currentUser;
+        private User _currentUser;
+        private int _userId;
 
-        public Users CurrentUser
-        {
-            get { return _currentUser; }
-            set 
-            { 
-                _currentUser = value;
-                // Здесь можно настроить интерфейс в зависимости от роли пользователя
-                ConfigureUIBasedOnUserRole();
-            }
-        }
-
+        // Default constructor
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        // Constructor that accepts a User parameter
+        public MainWindow(User user)
+        {
+            InitializeComponent();
+            _currentUser = user;
+            
+            // You can use the user information to customize the main window
+            // For example:
+            // this.Title = $"Welcome, {user.FullName}";
+            
+            // You might also want to set visibility of certain controls based on user role
+            // if (user.RoleName == "Admin") { adminPanel.Visibility = Visibility.Visible; }
+        }
+
+        // Constructor that accepts a user ID
+        public MainWindow(int userId)
+        {
+            InitializeComponent();
+            _userId = userId;
+            
+            // You would typically load the user from the database here
+            // _currentUser = _userService.GetUserById(userId);
         }
 
         private void ConfigureUIBasedOnUserRole()
@@ -44,12 +60,12 @@ namespace CourierShopLoginApp
             if (_currentUser == null) return;
 
             // Пример настройки интерфейса в зависимости от роли пользователя
-            Title = $"Courier Shop - {_currentUser.full_name}";
+            Title = $"Courier Shop - {_currentUser.FullName}";
 
             // Можно настроить видимость элементов в зависимости от роли
-            if (_currentUser.Roles != null)
+            if (!string.IsNullOrEmpty(_currentUser.RoleName))
             {
-                switch (_currentUser.Roles.role_name)
+                switch (_currentUser.RoleName)
                 {
                     case "Администратор":
                         // Настройка для администратора

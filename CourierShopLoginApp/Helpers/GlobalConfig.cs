@@ -1,5 +1,4 @@
 using System;
-// Keep System.Configuration import but we'll use fully qualified name to be safe
 
 namespace CourierShopLoginApp.Helpers
 {
@@ -8,13 +7,16 @@ namespace CourierShopLoginApp.Helpers
     /// </summary>
     public static class GlobalConfig
     {
-        public static string ConnectionString { get; set; }
+        public static string ConnectionString { get; private set; }
         
         public static void InitializeConfig()
         {
-            // Initialize application configuration settings
-            ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["CourierShopDB"]?.ConnectionString 
-                ?? throw new InvalidOperationException("Connection string 'CourierShopDB' not found in configuration.");
+            // Hardcode connection string directly from app.config
+            ConnectionString = "Data Source=t1brime-dev.ru;Initial Catalog=CourierShopDB;User ID=Apelsin;Password=gHunjkimjhngbtfder4";
+            
+            // If connection string is not set, throw an exception
+            if (string.IsNullOrEmpty(ConnectionString))
+                throw new InvalidOperationException("Connection string not initialized.");
         }
     }
 }

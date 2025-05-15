@@ -1,7 +1,6 @@
 using System;
 using System.Data;
 using System.Data.SqlClient;
-using System.Configuration;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -16,26 +15,25 @@ namespace CourierShopLoginApp.DataAccess
             _connectionString = CourierShopLoginApp.Helpers.GlobalConfig.ConnectionString;
         }
 
-        public async Task<List<Role>> GetRolesAsync()
+        public async Task<DataTable> GetRolesAsync()
         {
-            var roles = new List<Role>();
+            var dt = new DataTable();
+            dt.Columns.Add("RoleId", typeof(int));
+            dt.Columns.Add("RoleName", typeof(string));
+            
             using (var connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
-                using (var command = new SqlCommand("SELECT * FROM Roles", connection))
+                using (var command = new SqlCommand("SELECT role_id, role_name FROM Roles", connection))
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
                     {
-                        roles.Add(new Role
-                        {
-                            RoleId = reader.GetInt32(0),
-                            RoleName = reader.GetString(1)
-                        });
+                        dt.Rows.Add(reader.GetInt32(0), reader.GetString(1));
                     }
                 }
             }
-            return roles;
+            return dt;
         }
 
         public async Task<bool> CheckUserExistsAsync(string login)
@@ -43,7 +41,7 @@ namespace CourierShopLoginApp.DataAccess
             using (var connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
-                using (var command = new SqlCommand("SELECT COUNT(*) FROM Users WHERE Login = @Login", connection))
+                using (var command = new SqlCommand("SELECT COUNT(*) FROM Users WHERE username = @Login", connection))
                 {
                     command.Parameters.AddWithValue("@Login", login);
                     return ((int)await command.ExecuteScalarAsync()) > 0;
@@ -62,11 +60,5 @@ namespace CourierShopLoginApp.DataAccess
                 }
             }
         }
-    }
-
-    public class Role
-    {
-        public int RoleId { get; set; }
-        public string RoleName { get; set; }
     }
 }

@@ -1,18 +1,10 @@
-﻿using CourierShopLoginApp.DataModels;
-using CourierShopLoginApp.Helpers;
+﻿using CourierShopLoginApp.Helpers;
+using CourierShopLoginApp.Models; // Add this import for the User class
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data;
+using System.Data.SqlClient;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace CourierShopLoginApp.window
 {
@@ -21,12 +13,17 @@ namespace CourierShopLoginApp.window
     /// </summary>
     public partial class LoginWindow : Window
     {
-        // Замените 'CourierServiceDBEntities' на актуальное имя вашего DbContext
-        private CourierShopDBEntities1 _context = new CourierShopDBEntities1();
+        // SQL подключение вместо DbContext
+        private SqlConnection _connection;
 
         public LoginWindow()
         {
-            InitializeComponent();
+            InitializeComponent(); // Make sure this is called first if not already in the code
+            
+            // Initialize configuration before creating the connection
+            GlobalConfig.InitializeConfig();
+            
+            _connection = new SqlConnection(GlobalConfig.ConnectionString);
         }
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
@@ -43,34 +40,62 @@ namespace CourierShopLoginApp.window
 
             try
             {
-                // Поиск пользователя по имени пользователя (обычно без учета регистра для имени пользователя)
-                var user = _context.Users.FirstOrDefault(u => u.username.ToLower() == username.ToLower());
-
-                if (user != null)
+                // Открываем подключение, если оно закрыто
+                if (_connection.State != System.Data.ConnectionState.Open)
                 {
-                    if (PasswordHelper.VerifyPassword(password, user.password_hash))
-                    {
-                        StatusTextBlock.Text = "Вход успешен!";
-                        StatusTextBlock.Foreground = Brushes.Green; // Или используйте кисть из ресурсов
-
-                        MessageBox.Show($"Добро пожаловать, {user.full_name}! Роль: {user.Roles?.role_name ?? "Не указана"}", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
-
-                        // Открываем главное окно приложения и передаем пользователя
-                        MainWindow mainWindow = new MainWindow();
-                        mainWindow.CurrentUser = user; // Предполагаем, что в MainWindow есть свойство CurrentUser
-                        mainWindow.Show();
-                        this.Close(); // Закрываем окно логина
-                    }
-                    else
-                    {
-                        StatusTextBlock.Text = "Неверный пароль.";
-                        StatusTextBlock.Foreground = (SolidColorBrush)Application.Current.Resources["ErrorBrush"];
-                    }
+                    _connection.Open();
                 }
-                else
+
+                // SQL-запрос для поиска пользователя по имени пользователя
+                string query = @"SELECT u.user_id, u.username, u.password_hash, u.full_name, u.phone, 
+                                u.role_id, r.role_name 
+                                FROM Users u 
+                                LEFT JOIN Roles r ON u.role_id = r.role_id 
+                                WHERE LOWER(u.username) = LOWER(@Username)";
+
+                using (SqlCommand command = new SqlCommand(query, _connection))
                 {
-                    StatusTextBlock.Text = "Пользователь не найден.";
-                    StatusTextBlock.Foreground = (SolidColorBrush)Application.Current.Resources["ErrorBrush"];
+                    // Добавляем параметр для защиты от SQL-инъекций
+                    command.Parameters.AddWithValue("@Username", username.ToLower());
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            // Получаем данные пользователя
+                            string passwordHash = reader["password_hash"].ToString();
+
+                            if (PasswordHelper.VerifyPassword(password, passwordHash))
+                            {
+                                StatusTextBlock.Text = "Вход успешен!";
+                                StatusTextBlock.Foreground = Brushes.Green;
+
+                                // Получаем данные пользователя напрямую из reader
+                                int userId = Convert.ToInt32(reader["user_id"]);
+                                string fullName = reader["full_name"] != DBNull.Value ? reader["full_name"].ToString() : null;
+                                string roleName = reader["role_name"] != DBNull.Value ? reader["role_name"].ToString() : null;
+
+                                MessageBox.Show($"Добро пожаловать, {fullName}! Роль: {roleName ?? "Не указана"}", 
+                                    "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                                // Создаем объект User и передаем его в главное окно приложения
+                                User user = new User { UserId = userId, FullName = fullName, RoleName = roleName };
+                                MainWindow mainWindow = new MainWindow(user);
+                                mainWindow.Show();
+                                this.Close(); // Закрываем окно логина
+                            }
+                            else
+                            {
+                                StatusTextBlock.Text = "Неверный пароль.";
+                                StatusTextBlock.Foreground = (SolidColorBrush)Application.Current.Resources["ErrorBrush"];
+                            }
+                        }
+                        else
+                        {
+                            StatusTextBlock.Text = "Пользователь не найден.";
+                            StatusTextBlock.Foreground = (SolidColorBrush)Application.Current.Resources["ErrorBrush"];
+                        }
+                    }
                 }
             }
             catch (System.Exception ex)
@@ -78,6 +103,14 @@ namespace CourierShopLoginApp.window
                 StatusTextBlock.Text = "Ошибка при входе: " + ex.Message;
                 StatusTextBlock.Foreground = (SolidColorBrush)Application.Current.Resources["ErrorBrush"];
                 // Для отладки: System.Diagnostics.Debug.WriteLine(ex.ToString());
+            }
+            finally
+            {
+                // Закрываем соединение после запроса
+                if (_connection.State == System.Data.ConnectionState.Open)
+                {
+                    _connection.Close();
+                }
             }
         }
 
@@ -88,11 +121,11 @@ namespace CourierShopLoginApp.window
             registrationWindow.ShowDialog(); // Показать как модальный диалог
         }
 
-        // Убедитесь, что освобождаете контекст при закрытии окна
+        // Убедитесь, что освобождаете ресурсы соединения при закрытии окна
         protected override void OnClosed(System.EventArgs e)
         {
             base.OnClosed(e);
-            _context?.Dispose();
+            _connection?.Dispose();
         }
     }
 }
