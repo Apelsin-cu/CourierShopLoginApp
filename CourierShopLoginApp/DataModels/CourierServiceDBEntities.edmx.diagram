@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="38a27eef0feb469eba85ab41a8e900cd" Name="Diagram1">
+        <EntityTypeShape EntityType="CourierShopDBModel.Clients" Width="1.5" PointX="3" PointY="0.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CourierShopDBModel.OrderItems" Width="1.5" PointX="7.5" PointY="1.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CourierShopDBModel.Orders" Width="1.5" PointX="5.25" PointY="3.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CourierShopDBModel.Payments" Width="1.5" PointX="7.5" PointY="4.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CourierShopDBModel.Roles" Width="1.5" PointX="0.75" PointY="4.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CourierShopDBModel.RouteLogs" Width="1.5" PointX="7.5" PointY="7.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CourierShopDBModel.Stores" Width="1.5" PointX="3" PointY="7.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CourierShopDBModel.Users" Width="1.5" PointX="3" PointY="4" IsExpanded="true" />
+        <AssociationConnector Association="CourierShopDBModel.FK__Orders__client_i__440B1D61" ManuallyRouted="false" />
+        <AssociationConnector Association="CourierShopDBModel.FK__OrderItem__order__4AB81AF0" ManuallyRouted="false" />
+        <AssociationConnector Association="CourierShopDBModel.FK__Orders__courier___45F365D3" ManuallyRouted="false" />
+        <AssociationConnector Association="CourierShopDBModel.FK__Orders__store_id__44FF419A" ManuallyRouted="false" />
+        <AssociationConnector Association="CourierShopDBModel.FK__Payments__order___534D60F1" ManuallyRouted="false" />
+        <AssociationConnector Association="CourierShopDBModel.FK__RouteLogs__order__4E88ABD4" ManuallyRouted="false" />
+        <AssociationConnector Association="CourierShopDBModel.FK__Users__role_id__3B75D760" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
