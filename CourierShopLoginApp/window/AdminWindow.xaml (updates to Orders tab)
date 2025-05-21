@@ -1,0 +1,51 @@
+<!-- Вкладка Заказы -->
+<TabItem Header="Заказы">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Панель инструментов -->
+        <ToolBar Grid.Row="0">
+            <Button Content="Обновить" Width="100" Margin="0,0,5,0" Click="RefreshOrders_Click"/>
+            <ComboBox x:Name="OrderStatusFilter" Width="150" Margin="0,0,5,0" 
+                      SelectionChanged="OrderStatusFilter_SelectionChanged"
+                      DisplayMemberPath="StatusName" SelectedValuePath="StatusId"/>
+            <TextBlock Text="Фильтр по статусу" VerticalAlignment="Center"/>
+        </ToolBar>
+
+        <!-- Таблица заказов -->
+        <DataGrid Grid.Row="1" x:Name="OrdersDataGrid" AutoGenerateColumns="False" 
+                  IsReadOnly="True" SelectionMode="Single" 
+                  MouseDoubleClick="OrdersDataGrid_MouseDoubleClick">
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Просмотр деталей" Click="ViewOrderDetails_Click"/>
+                    <MenuItem Header="Назначить курьера" Click="AssignCourier_Click"/>
+                    <MenuItem Header="Изменить статус" Click="ChangeOrderStatus_Click"/>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="№" Binding="{Binding OrderId}" Width="60"/>
+                <DataGridTextColumn Header="Дата" Binding="{Binding OrderDate, StringFormat={}{0:dd.MM.yyyy HH:mm}}" Width="130"/>
+                <DataGridTextColumn Header="Клиент" Binding="{Binding CustomerName}" Width="150"/>
+                <DataGridTextColumn Header="Адрес" Binding="{Binding DeliveryAddress}" Width="200"/>
+                <DataGridTextColumn Header="Статус" Binding="{Binding StatusName}" Width="100"/>
+                <DataGridTextColumn Header="Курьер" Binding="{Binding CourierName}" Width="150"/>
+                <DataGridTextColumn Header="Сумма" Binding="{Binding TotalAmount, StringFormat={}{0:N2} руб.}" Width="100"/>
+                <DataGridTemplateColumn Header="Действия" Width="180">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="Детали" Margin="2" Click="ViewOrderDetails_Click"/>
+                                <Button Content="Курьер" Margin="2" Click="AssignCourier_Click"/>
+                                <Button Content="Статус" Margin="2" Click="ChangeOrderStatus_Click"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</TabItem>

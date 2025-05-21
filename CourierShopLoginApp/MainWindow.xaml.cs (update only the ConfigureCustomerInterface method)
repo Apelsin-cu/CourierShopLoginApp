@@ -1,0 +1,17 @@
+private void ConfigureCustomerInterface()
+{
+    try
+    {
+        // Открываем окно клиента и закрываем текущее окно
+        ClientWindow clientWindow = new ClientWindow(_currentUser);
+        clientWindow.Show();
+        Debug.WriteLine("Client window created and shown successfully");
+        this.Close();
+    }
+    catch (Exception ex)
+    {
+        Debug.WriteLine($"Error opening client window: {ex.Message}");
+        MessageBox.Show($"Ошибка при открытии интерфейса клиента: {ex.Message}", 
+            "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+    }
+}

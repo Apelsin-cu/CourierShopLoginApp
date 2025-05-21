@@ -1,0 +1,17 @@
+private async void CreateNewOrder_Click(object sender, RoutedEventArgs e)
+{
+    try
+    {
+        var newOrderWindow = new NewOrderWindow(_currentUser.UserId);
+        newOrderWindow.Owner = this;
+        if (newOrderWindow.ShowDialog() == true)
+        {
+            // Обновляем список заказов после создания нового
+            await LoadUserOrders();
+        }
+    }
+    catch (Exception ex)
+    {
+        ShowError($"Ошибка при создании заказа: {ex.Message}");
+    }
+}

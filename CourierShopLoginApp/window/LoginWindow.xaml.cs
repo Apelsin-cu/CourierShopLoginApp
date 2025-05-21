@@ -26,7 +26,7 @@ namespace CourierShopLoginApp.window
             _connection = new SqlConnection(GlobalConfig.ConnectionString);
         }
 
-        private void LoginButton_Click(object sender, RoutedEventArgs e)
+        private async void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             string username = UsernameTextBox.Text;
             string password = PasswordBox.Password;
@@ -75,11 +75,29 @@ namespace CourierShopLoginApp.window
                                 string fullName = reader["full_name"] != DBNull.Value ? reader["full_name"].ToString() : null;
                                 string roleName = reader["role_name"] != DBNull.Value ? reader["role_name"].ToString() : null;
 
-                                MessageBox.Show($"Добро пожаловать, {fullName}! Роль: {roleName ?? "Не указана"}", 
+                                // Фиксируем неправильное название роли, если это "Administrator"
+                                if (roleName == "Administrator")
+                                {
+                                    roleName = "Администратор";
+                                    
+                                    // Обновляем роль в базе данных
+                                    await RoleHelper.FixAdminRoleName();
+                                }
+
+                                // Добавляем отладочный вывод
+                                System.Diagnostics.Debug.WriteLine($"User authenticated - ID: {userId}, Name: {fullName}, Role: '{roleName}'");
+
+                                // Отображаем роль с учетом возможных пробелов для отладки
+                                string roleForDisplay = roleName ?? "Не указана";
+                                MessageBox.Show($"Добро пожаловать, {fullName}!\nРоль: '{roleForDisplay}'", 
                                     "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
 
                                 // Создаем объект User и передаем его в главное окно приложения
-                                User user = new User { UserId = userId, FullName = fullName, RoleName = roleName };
+                                User user = new User { 
+                                    UserId = userId, 
+                                    FullName = fullName, 
+                                    RoleName = roleName?.Trim() // Удаляем лишние пробелы, которые могут повлиять на проверку
+                                };
                                 MainWindow mainWindow = new MainWindow(user);
                                 mainWindow.Show();
                                 this.Close(); // Закрываем окно логина

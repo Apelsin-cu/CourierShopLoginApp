@@ -1,0 +1,133 @@
+// Add these methods to AdminWindow.xaml.cs
+
+private async void RefreshOrders_Click(object sender, RoutedEventArgs e)
+{
+    try
+    {
+        string statusFilter = OrderStatusFilter.SelectedValue?.ToString();
+        var orders = await _dbHelper.GetOrdersAsync(statusFilter);
+        OrdersDataGrid.ItemsSource = orders;
+    }
+    catch (Exception ex)
+    {
+        MessageBox.Show($"Ошибка при загрузке заказов: {ex.Message}", 
+            "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+    }
+}
+
+private async void ViewOrderDetails_Click(object sender, RoutedEventArgs e)
+{
+    var order = GetSelectedOrder();
+    if (order == null) return;
+
+    try
+    {
+        var detailsWindow = new OrderDetailsWindow(order.OrderId, true);
+        detailsWindow.Owner = this;
+        if (detailsWindow.ShowDialog() == true)
+        {
+            await RefreshOrdersList();
+        }
+    }
+    catch (Exception ex)
+    {
+        MessageBox.Show($"Ошибка при открытии деталей заказа: {ex.Message}", 
+            "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+    }
+}
+
+private async void AssignCourier_Click(object sender, RoutedEventArgs e)
+{
+    var order = GetSelectedOrder();
+    if (order == null) return;
+
+    try
+    {
+        var couriers = await _dbHelper.GetCouriersAsync();
+        if (!couriers.Any())
+        {
+            MessageBox.Show("Нет доступных курьеров", 
+                "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
+        var courierWindow = new SelectCourierWindow(couriers, order.CourierId);
+        courierWindow.Owner = this;
+        
+        if (courierWindow.ShowDialog() == true)
+        {
+            order.CourierId = courierWindow.SelectedCourierId;
+            await _dbHelper.UpdateOrderAsync(order);
+            await RefreshOrdersList();
+        }
+    }
+    catch (Exception ex)
+    {
+        MessageBox.Show($"Ошибка при назначении курьера: {ex.Message}", 
+            "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+    }
+}
+
+private async void ChangeOrderStatus_Click(object sender, RoutedEventArgs e)
+{
+    var order = GetSelectedOrder();
+    if (order == null) return;
+
+    try
+    {
+        var statuses = await _dbHelper.GetOrderStatusesAsync();
+        var statusWindow = new SelectStatusWindow(statuses, order.StatusId);
+        statusWindow.Owner = this;
+        
+        if (statusWindow.ShowDialog() == true)
+        {
+            order.StatusId = statusWindow.SelectedStatusId;
+            await _dbHelper.UpdateOrderAsync(order);
+            await RefreshOrdersList();
+        }
+    }
+    catch (Exception ex)
+    {
+        MessageBox.Show($"Ошибка при изменении статуса: {ex.Message}", 
+            "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+    }
+}
+
+private void OrdersDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+{
+    ViewOrderDetails_Click(sender, e);
+}
+
+private void OrderStatusFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
+{
+    RefreshOrders_Click(sender, e);
+}
+
+private Order GetSelectedOrder()
+{
+    var order = OrdersDataGrid.SelectedItem as Order;
+    if (order == null)
+    {
+        MessageBox.Show("Выберите заказ", "Информация", 
+            MessageBoxButton.OK, MessageBoxImage.Information);
+    }
+    return order;
+}
+
+private async Task RefreshOrdersList()
+{
+    await Dispatcher.InvokeAsync(async () =>
+    {
+        try
+        {
+            string statusFilter = OrderStatusFilter.SelectedValue?.ToString();
+            var orders = await _dbHelper.GetOrdersAsync(statusFilter);
+            OrdersDataGrid.ItemsSource = orders;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Ошибка при обновлении списка заказов: {ex.Message}", 
+                "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    });
+}

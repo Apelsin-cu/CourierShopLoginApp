@@ -1,0 +1,63 @@
+// Add these methods to the DatabaseHelper class
+
+public async Task<List<User>> GetCouriersAsync()
+{
+    List<User> couriers = new List<User>();
+    
+    using (var connection = new SqlConnection(_connectionString))
+    {
+        await connection.OpenAsync();
+        using (var command = new SqlCommand(
+            @"SELECT u.user_id, u.username, u.full_name, u.phone
+            FROM Users u
+            JOIN Roles r ON u.role_id = r.role_id
+            WHERE r.role_name = 'Курьер' AND u.is_active = 1
+            ORDER BY u.full_name", connection))
+        {
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                while (await reader.ReadAsync())
+                {
+                    couriers.Add(new User
+                    {
+                        UserId = reader.GetInt32(0),
+                        Username = reader.GetString(1),
+                        FullName = !reader.IsDBNull(2) ? reader.GetString(2) : null,
+                        Phone = !reader.IsDBNull(3) ? reader.GetString(3) : null
+                    });
+                }
+            }
+        }
+    }
+    
+    return couriers;
+}
+
+public async Task UpdateOrderAsync(Order order)
+{
+    using (var connection = new SqlConnection(_connectionString))
+    {
+        await connection.OpenAsync();
+        using (var command = new SqlCommand(
+            @"UPDATE Orders 
+            SET courier_id = @CourierId,
+                status_id = @StatusId,
+                delivery_address = @DeliveryAddress,
+                comment = @Comment,
+                delivery_date = @DeliveryDate
+            WHERE order_id = @OrderId", connection))
+        {
+            command.Parameters.AddWithValue("@OrderId", order.OrderId);
+            command.Parameters.AddWithValue("@CourierId", 
+                order.CourierId.HasValue ? (object)order.CourierId : DBNull.Value);
+            command.Parameters.AddWithValue("@StatusId", order.StatusId);
+            command.Parameters.AddWithValue("@DeliveryAddress", order.DeliveryAddress);
+            command.Parameters.AddWithValue("@Comment", 
+                order.Comment != null ? (object)order.Comment : DBNull.Value);
+            command.Parameters.AddWithValue("@DeliveryDate", 
+                order.DeliveryDate.HasValue ? (object)order.DeliveryDate : DBNull.Value);
+
+            await command.ExecuteNonQueryAsync();
+        }
+    }
+}

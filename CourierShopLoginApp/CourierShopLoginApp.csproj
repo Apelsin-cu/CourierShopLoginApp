@@ -110,14 +110,39 @@
     </Compile>
     <Compile Include="Helpers\Class1.cs" />
     <Compile Include="Helpers\DatabaseHelper.cs" />
+    <Compile Include="Helpers\DatabaseInitializer.cs" />
     <Compile Include="Helpers\GlobalConfig.cs" />
     <Compile Include="Helpers\PasswordHelper.cs" />
+    <Compile Include="Helpers\RoleHalpercs.cs" />
+    <Compile Include="Models\Delivery.cs" />
+    <Compile Include="Models\Order.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="window\AdminWindow.xaml.cs">
+      <DependentUpon>AdminWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="window\ClientWindow.xaml.cs">
+      <DependentUpon>ClientWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="window\CourierWindow.xaml.cs">
+      <DependentUpon>CourierWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="window\LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="window\NewOrderWindow.xaml.cs">
+      <DependentUpon>NewOrderWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="window\OrderDetailsWindow.xaml.cs">
+      <DependentUpon>OrderDetailsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="window\RegistrationWindow.xaml.cs">
       <DependentUpon>RegistrationWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="window\SelectCourierWindow.xaml.cs">
+      <DependentUpon>SelectCourierWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="window\SelectStatusWindow.xaml.cs">
+      <DependentUpon>SelectStatusWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -131,12 +156,33 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="window\AdminWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="window\ClientWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="window\CourierWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="window\LoginWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="window\NewOrderWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="window\OrderDetailsWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="window\RegistrationWindow.xaml">
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="window\SelectCourierWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="window\SelectStatusWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
@@ -165,10 +211,15 @@
     <None Include="DataModels\CourierServiceDBEntities.edmx.diagram">
       <DependentUpon>CourierServiceDBEntities.edmx</DependentUpon>
     </None>
+    <None Include="Helpers\DatabaseHelper.cs %28adding new methods%29" />
+    <None Include="MainWindow.xaml.cs %28update only the ConfigureCustomerInterface method%29" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="window\AdminWindow.xaml %28updates to Orders tab%29" />
+    <None Include="window\AdminWindow.xaml.cs %28adding order management methods%29" />
+    <None Include="window\ClientWindow.xaml.cs %28update only CreateNewOrder_Click method%29" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -187,6 +238,7 @@
       <DependentUpon>CourierServiceDBEntities.edmx</DependentUpon>
       <LastGenOutput>CourierServiceDBEntities.cs</LastGenOutput>
     </Content>
+    <Content Include="Scripts\CourierShopDB.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

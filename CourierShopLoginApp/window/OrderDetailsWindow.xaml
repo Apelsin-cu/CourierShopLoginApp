@@ -1,0 +1,99 @@
+<Window x:Class="CourierShopLoginApp.window.OrderDetailsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CourierShopLoginApp.window"
+        mc:Ignorable="d"
+        Title="Детали заказа    " Height="500" Width="600"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Заголовок -->
+        <TextBlock x:Name="TitleTextBlock" 
+                   Text="Заказ №" 
+                   FontSize="20" 
+                   FontWeight="Bold" 
+                   Margin="0,0,0,15"/>
+
+        <!-- Основная информация -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="0,10">
+                <!-- Информация о заказе -->
+                <GroupBox Header="Информация о заказе" Margin="0,0,0,10">
+                    <Grid Margin="5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="Дата создания:" Margin="0,5"/>
+                        <TextBlock Grid.Column="1" x:Name="OrderDateTextBlock" Margin="5"/>
+
+                        <TextBlock Grid.Row="1" Text="Статус заказа:" Margin="0,5"/>
+                        <ComboBox Grid.Row="1" Grid.Column="1" x:Name="StatusComboBox" 
+                                Margin="5" DisplayMemberPath="StatusName" 
+                                SelectedValuePath="StatusId"/>
+
+                        <TextBlock Grid.Row="2" Text="Сумма заказа:" Margin="0,5"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" x:Name="TotalAmountTextBlock" Margin="5"/>
+
+                        <TextBlock Grid.Row="3" Text="Дата доставки:" Margin="0,5"/>
+                        <DatePicker Grid.Row="3" Grid.Column="1" x:Name="DeliveryDatePicker" 
+                                  Margin="5"/>
+                    </Grid>
+                </GroupBox>
+
+                <!-- Информация о клиенте -->
+                <GroupBox Header="Информация о клиенте" Margin="0,0,0,10">
+                    <StackPanel Margin="5">
+                        <TextBlock x:Name="CustomerNameTextBlock" Margin="0,5"/>
+                        <TextBlock x:Name="CustomerPhoneTextBlock" Margin="0,5"/>
+                        <TextBlock Text="Адрес доставки:" FontWeight="Bold" Margin="0,5,0,0"/>
+                        <TextBox x:Name="DeliveryAddressTextBox" TextWrapping="Wrap" 
+                                Height="50" Margin="0,5"/>
+                    </StackPanel>
+                </GroupBox>
+
+                <!-- Назначение курьера -->
+                <GroupBox Header="Назначение курьера" Margin="0,0,0,10">
+                    <StackPanel Margin="5">
+                        <ComboBox x:Name="CourierComboBox" Margin="0,5"
+                                DisplayMemberPath="FullName" SelectedValuePath="UserId"/>
+                    </StackPanel>
+                </GroupBox>
+
+                <!-- Комментарий -->
+                <GroupBox Header="Комментарий" Margin="0,0,0,10">
+                    <TextBox x:Name="CommentTextBox" TextWrapping="Wrap" 
+                            Height="60" Margin="5"/>
+                </GroupBox>
+
+                <!-- Сообщения об ошибках -->
+                <TextBlock x:Name="ErrorTextBlock" Foreground="Red" 
+                          TextWrapping="Wrap" Margin="0,5" 
+                          Visibility="Collapsed"/>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Кнопки -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" 
+                    HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button Content="Сохранить изменения" Width="150" Height="30" 
+                    Margin="0,0,10,0" Click="SaveChanges_Click"/>
+            <Button Content="Закрыть" Width="100" Height="30" 
+                    Click="CloseButton_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

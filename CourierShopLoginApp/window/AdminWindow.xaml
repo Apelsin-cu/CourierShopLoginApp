@@ -1,0 +1,230 @@
+<Window x:Class="CourierShopLoginApp.window.AdminWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CourierShopLoginApp.window"
+        mc:Ignorable="d"
+                       Title="Admin Panel" Height="600" Width="900" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header with admin info -->
+        <Border Grid.Row="0" Background="#2c3e50" Padding="10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <TextBlock Text="Панель администратора" FontSize="20" Foreground="White" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="AdminNameTextBlock" Text=" - Имя администратора" FontSize="16" Foreground="White" 
+                               VerticalAlignment="Center" Margin="10,0,0,0"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <TextBlock x:Name="DateTimeTextBlock" Text="Дата и время" FontSize="14" Foreground="White" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <Button Content="Выход" Width="100" Click="LogoutButton_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Main content with tabs -->
+        <TabControl Grid.Row="1" Margin="4,5,6,5">
+            <TabItem Header="Дашборд">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Обзор системы" FontSize="18" FontWeight="Bold" Grid.Row="0" Margin="0,0,0,10"/>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Dashboard cards -->
+                        <Border Grid.Column="0" Grid.Row="0" Background="#3498db" Margin="5" CornerRadius="5">
+                            <StackPanel Margin="10">
+                                <TextBlock Text="Активные заказы" Foreground="White" FontWeight="Bold"/>
+                                <TextBlock x:Name="ActiveOrdersCountTextBlock" Text="0" FontSize="24" Foreground="White"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="1" Grid.Row="0" Background="#2ecc71" Margin="5" CornerRadius="5">
+                            <StackPanel Margin="10">
+                                <TextBlock Text="Активные курьеры" Foreground="White" FontWeight="Bold"/>
+                                <TextBlock x:Name="ActiveCouriersCountTextBlock" Text="0" FontSize="24" Foreground="White"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="2" Grid.Row="0" Background="#e74c3c" Margin="5" CornerRadius="5">
+                            <StackPanel Margin="10">
+                                <TextBlock Text="Новые клиенты (сегодня)" Foreground="White" FontWeight="Bold"/>
+                                <TextBlock x:Name="NewCustomersCountTextBlock" Text="0" FontSize="24" Foreground="White"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Charts placeholder -->
+                        <Border Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" Background="#ecf0f1" Margin="5" CornerRadius="5">
+                            <Grid>
+                                <TextBlock Text="Статистика заказов по дням" FontWeight="Bold" Margin="10"/>
+                                <Rectangle Stroke="#bdc3c7" StrokeThickness="1" Margin="10,40,10,10"/>
+                                <TextBlock Text="[График будет здесь]" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Пользователи">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Horizontal" Grid.Column="0">
+                            <TextBlock Text="Пользователи системы" FontSize="18" FontWeight="Bold"/>
+                            <TextBlock x:Name="UsersCountTextBlock" Text=" (загрузка...)" FontSize="16" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Column="1">
+                            <Button Content="Добавить пользователя" Margin="5" Click="AddUserButton_Click" Width="150"/>
+                            <Button Content="Обновить" Margin="5" Click="RefreshUsersButton_Click" Width="100"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <DataGrid x:Name="UsersDataGrid" Grid.Row="1" Margin="0,10,0,10" AutoGenerateColumns="False" 
+                              IsReadOnly="False" SelectionMode="Single" SelectionChanged="UsersDataGrid_SelectionChanged">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding UserId}" IsReadOnly="True" Width="50"/>
+                            <DataGridTextColumn Header="Логин" Binding="{Binding Username}" Width="120"/>
+                            <DataGridTextColumn Header="ФИО" Binding="{Binding FullName}" Width="*"/>
+                            <DataGridTextColumn Header="Телефон" Binding="{Binding Phone}" Width="120"/>
+                            <DataGridTextColumn Header="Роль" Binding="{Binding RoleName}" Width="120"/>
+                            <DataGridCheckBoxColumn Header="Активен" Binding="{Binding IsActive}" Width="70"/>
+                            <DataGridTextColumn Header="Дата создания" Binding="{Binding CreatedDate, StringFormat=dd.MM.yyyy}" IsReadOnly="True" Width="110"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <StackPanel Grid.Row="2" Orientation="Horizontal">
+                        <Button Content="Изменить" Width="100" Margin="5" Click="EditUserButton_Click" x:Name="EditUserButton" IsEnabled="False"/>
+                        <Button Content="Блокировать" Width="100" Margin="5" Click="BlockUserButton_Click" x:Name="BlockUserButton" IsEnabled="False"/>
+                        <Button Content="Сбросить пароль" Width="120" Margin="5" Click="ResetPasswordButton_Click" x:Name="ResetPasswordButton" IsEnabled="False"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Заказы">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Управление заказами" FontSize="18" FontWeight="Bold" Grid.Column="0"/>
+                        <StackPanel Orientation="Horizontal" Grid.Column="1">
+                            <ComboBox x:Name="OrderStatusFilterComboBox" Width="150" Margin="5" SelectionChanged="OrderStatusFilterComboBox_SelectionChanged">
+                                <ComboBoxItem Content="Все заказы" IsSelected="True"/>
+                                <ComboBoxItem Content="Новые"/>
+                                <ComboBoxItem Content="В обработке"/>
+                                <ComboBoxItem Content="Доставляются"/>
+                                <ComboBoxItem Content="Выполнены"/>
+                                <ComboBoxItem Content="Отменены"/>
+                            </ComboBox>
+                            <Button Content="Обновить" Width="100" Margin="5" Click="RefreshOrdersButton_Click"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <DataGrid x:Name="OrdersDataGrid" Grid.Row="1" Margin="0,10,0,10" AutoGenerateColumns="False" 
+                              IsReadOnly="True" SelectionMode="Single" SelectionChanged="OrdersDataGrid_SelectionChanged">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="№" Binding="{Binding OrderId}" Width="60"/>
+                            <DataGridTextColumn Header="Клиент" Binding="{Binding CustomerName}" Width="*"/>
+                            <DataGridTextColumn Header="Адрес" Binding="{Binding DeliveryAddress}" Width="*"/>
+                            <DataGridTextColumn Header="Дата заказа" Binding="{Binding OrderDate, StringFormat=dd.MM.yyyy HH:mm}" Width="150"/>
+                            <DataGridTextColumn Header="Статус" Binding="{Binding StatusName}" Width="120"/>
+                            <DataGridTextColumn Header="Курьер" Binding="{Binding CourierName}" Width="120"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <StackPanel Grid.Row="2" Orientation="Horizontal">
+                        <Button Content="Просмотр деталей" Width="130" Margin="5" Click="ViewOrderDetailsButton_Click" x:Name="ViewOrderDetailsButton" IsEnabled="False"/>
+                        <Button Content="Назначить курьера" Width="130" Margin="5" Click="AssignCourierButton_Click" x:Name="AssignCourierButton" IsEnabled="False"/>
+                        <Button Content="Изменить статус" Width="130" Margin="5" Click="ChangeOrderStatusButton_Click" x:Name="ChangeOrderStatusButton" IsEnabled="False"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Отчеты">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Система отчетов" FontSize="18" FontWeight="Bold" Grid.Row="0"/>
+                    
+                    <StackPanel Grid.Row="1" Margin="0,10">
+                        <TextBlock Text="Выберите тип отчета:" Margin="0,0,0,5"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <ComboBox x:Name="ReportTypeComboBox" Grid.Column="0" Margin="0,0,5,0">
+                                <ComboBoxItem Content="Заказы за период"/>
+                                <ComboBoxItem Content="Эффективность курьеров"/>
+                                <ComboBoxItem Content="Популярные адреса доставки"/>
+                                <ComboBoxItem Content="Финансовый отчет"/>
+                            </ComboBox>
+                            <DatePicker x:Name="StartDatePicker" Grid.Column="1" Width="120" Margin="0,0,5,0"/>
+                            <DatePicker x:Name="EndDatePicker" Grid.Column="2" Width="120" Margin="0,0,5,0"/>
+                            <Button Content="Сформировать" Grid.Column="3" Width="120" Click="GenerateReportButton_Click"/>
+                        </Grid>
+                    </StackPanel>
+
+                    <Border Grid.Row="2" BorderBrush="#bdc3c7" BorderThickness="1" Margin="0,10,0,0">
+                        <Grid>
+                            <TextBlock Text="Выберите тип отчета и нажмите 'Сформировать'" 
+                                     HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Gray"
+                                     x:Name="ReportPlaceholderTextBlock"/>
+                            <DataGrid x:Name="ReportDataGrid" Visibility="Collapsed" AutoGenerateColumns="True"/>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+        <!-- Footer -->
+        <StatusBar Grid.Row="2">
+            <StatusBarItem>
+                <TextBlock x:Name="StatusTextBlock" Text="Готово"/>
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</Window>
